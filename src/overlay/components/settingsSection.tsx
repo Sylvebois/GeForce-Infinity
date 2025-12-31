@@ -33,6 +33,39 @@ const userAgentOptions = [
     },
 ];
 
+const keyboardLayoutOptions = [
+    { value: "", label: "Default" },
+    { value: "bg-BG", label: "Bulgarian" },
+    { value: "zh-TW", label: "Traditional Chinese" },
+    { value: "zh-CN", label: "Chinese" },
+    { value: "de-DE", label: "Deutsch" },
+    { value: "en-CA", label: "English (Canada)" },
+    { value: "en-GB", label: "English (GB)" },
+    { value: "en-IN", label: "English (India)" },
+    { value: "en-US", label: "English (USA)" },
+    { value: "fr-FR", label: "France" },
+    { value: "he-IL", label: "Hebrew" },
+    { value: "it-IT", label: "Italia" },
+    { value: "ja-JP", label: "Japan 102" },
+    { value: "ja-106", label: "Japan 106" },
+    { value: "ko-KR", label: "Korea" },
+    { value: "hr-HR", label: "Croatia" },
+    { value: "nl-NL", label: "Netherlands" },
+    { value: "pl-P", label: "Poland" }, 
+    { value: "pt-PT", label: "Portuguese" }, 
+    { value: "pt-BR", label: "Portuguese (Brasilian)" },
+    { value: "ro-RO", label: "Romanian" },
+    { value: "ru-RU", label: "Russia" },
+    { value: "sv-SE", label: "Swedish" },
+    { value: "sr-Latn-CS", label: "Serbian" },
+    { value: "sk-SK", label: "Slovak" },
+    { value: "es-ES_tradnl", label: "Spain" },
+    { value: "es-MX", label: "Mexican" },
+    { value: "cs-CZ", label: "Czech" },
+    { value: "tr-TR", label: "Turkish" },
+    { value: "hu-HU", label: "Hungarian" },
+]
+
 // New options
 const resolutionOptions = [
     { label: "1366 x 768", value: "1366x768" },
@@ -71,6 +104,12 @@ export const SettingsSection: React.FC<SettingsSectionProps> = ({
             : "";
     };
 
+    const getKeyboardLayout = () => {
+        return keyboardLayoutOptions.find((o) => o.value === config.keyboardLayout)
+            ? config.keyboardLayout
+            : "";
+    };
+
     const getResolutionValue = () => {
         const current = `${config.monitorWidth}x${config.monitorHeight}`;
         return resolutionOptions.some((r) => r.value === current)
@@ -96,6 +135,11 @@ export const SettingsSection: React.FC<SettingsSectionProps> = ({
 
     const handleUserAgentChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const updated = { ...config, userAgent: e.target.value };
+        setConfig(updated);
+    };
+
+    const handleKeyboardLayoutChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const updated = { ...config, keyboardLayout: e.target.value };
         setConfig(updated);
     };
 
@@ -183,6 +227,32 @@ export const SettingsSection: React.FC<SettingsSectionProps> = ({
                         className="rounded p-2 bg-[#23272b] border border-gray-600 ml-4 text-white"
                     >
                         {userAgentOptions.map((option) => (
+                            <option key={option.value} value={option.value}>
+                                {option.label}
+                            </option>
+                        ))}
+                    </select>
+                </label>
+                <label className="flex items-center justify-between">
+                    <span>
+                        Keyboard Layout
+                        <div className="relative group inline-block">
+                            <FaInfoCircle className="ml-2 cursor-pointer peer" />
+                            <div className="absolute bottom-full left-1/2 -translate-x-1/2 ml-8 mb-2 px-3 py-1 rounded-md bg-gray-500 text-white text-base opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10 pointer-events-none">
+                                Changes the keyboard layout
+                                <br />
+                                (default is QWERTY - US)
+                            </div>
+                        </div>
+                        <br />
+                        <small>Restart application to apply changes</small>
+                    </span>
+                    <select
+                        value={getKeyboardLayout()}
+                        onChange={handleKeyboardLayoutChange}
+                        className="rounded p-2 bg-[#23272b] border border-gray-600 ml-4 text-white"
+                    >
+                        {keyboardLayoutOptions.map((option) => (
                             <option key={option.value} value={option.value}>
                                 {option.label}
                             </option>
