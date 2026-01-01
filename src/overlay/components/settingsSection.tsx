@@ -139,7 +139,32 @@ export const SettingsSection: React.FC<SettingsSectionProps> = ({
     };
 
     const handleKeyboardLayoutChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const chosenKB = keyboardLayoutOptions.find((o) => o.value === e.target.value)
         const updated = { ...config, keyboardLayout: e.target.value };
+
+        const request = window.indexedDB.open("gfnclient");
+		request.onsuccess = (event) => {
+            if(event.target && event.target.result && chosenKB) {
+                const db = event.target.result;
+                const transaction = db.transaction("sharedStore", "readwrite");
+                const objectStore = transaction.objectStore("sharedStore");
+
+                if(chosenKB.value === "") {
+                    objectStore.delete("keyboardLayout");
+                }
+                else {
+                    const item = { 
+                        name: chosenKB.label, 
+                        code: chosenKB.value,
+                        params: undefined
+                    };
+                    objectStore.put(item, "keyboardLayout");
+                }
+            }
+            
+        }
+        request.onerror = (err) => console.log(`[DEV] - Error opening indexedDB : ${err}`);
+
         setConfig(updated);
     };
 
@@ -241,7 +266,9 @@ export const SettingsSection: React.FC<SettingsSectionProps> = ({
                             <div className="absolute bottom-full left-1/2 -translate-x-1/2 ml-8 mb-2 px-3 py-1 rounded-md bg-gray-500 text-white text-base opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10 pointer-events-none">
                                 Changes the keyboard layout
                                 <br />
-                                (default is QWERTY - US)
+                                (default on non Windows OS
+                                <br />
+                                is en-US)
                             </div>
                         </div>
                         <br />
